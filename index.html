@@ -1,401 +1,469 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  BrainCircuit, 
-  Database, 
-  FileText, 
-  ChefHat, 
-  Smartphone, 
-  Map, 
-  Music, 
-  ArrowRight, 
-  ArrowLeft,
-  Play,
-  CheckCircle2,
-  XCircle
-} from 'lucide-react';
-
-export default function App() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  const slides = [
-    <SlideIntro key="intro" />,
-    <SlideConcept key="concept" />,
-    <SlideGame key="game" />,
-    <SlideExamples key="examples" />,
-    <SlideOutro key="outro" />
-  ];
-
-  const nextSlide = () => setCurrentSlide((prev) => Math.min(prev + 1, slides.length - 1));
-  const prevSlide = () => setCurrentSlide((prev) => Math.max(prev - 1, 0));
-
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans flex flex-col">
-      {/* Header */}
-      <header className="bg-indigo-600 text-white p-4 shadow-md flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <BrainCircuit size={28} />
-          <h1 className="text-xl font-bold tracking-wide">Modul Interaktif AI Kelas 10</h1>
-        </div>
-        <div className="text-indigo-200 font-medium text-sm hidden sm:block">
-          Materi: Data ➔ Informasi ➔ AI
-        </div>
-      </header>
-
-      {/* Main Content Area */}
-      <main className="flex-grow flex items-center justify-center p-4 sm:p-8">
-        <div className="bg-white w-full max-w-4xl rounded-2xl shadow-xl overflow-hidden min-h-[500px] flex flex-col relative transition-all duration-500">
-          
-          {/* Progress Bar */}
-          <div className="h-2 bg-slate-100 w-full absolute top-0 left-0">
-            <div 
-              className="h-full bg-indigo-500 transition-all duration-500 ease-out"
-              style={{ width: `${((currentSlide + 1) / slides.length) * 100}%` }}
-            ></div>
-          </div>
-
-          <div className="flex-grow p-6 sm:p-10 flex flex-col">
-            {slides[currentSlide]}
-          </div>
-
-          {/* Navigation */}
-          <div className="bg-slate-50 p-4 border-t border-slate-100 flex justify-between items-center">
-            <button 
-              onClick={prevSlide}
-              disabled={currentSlide === 0}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                currentSlide === 0 
-                  ? 'text-slate-400 cursor-not-allowed' 
-                  : 'text-indigo-600 hover:bg-indigo-50'
-              }`}
-            >
-              <ArrowLeft size={20} /> Sebelumnya
-            </button>
-            
-            <div className="text-slate-400 text-sm font-medium">
-              {currentSlide + 1} / {slides.length}
-            </div>
-
-            <button 
-              onClick={nextSlide}
-              disabled={currentSlide === slides.length - 1}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                currentSlide === slides.length - 1 
-                  ? 'text-slate-400 cursor-not-allowed' 
-                  : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm'
-              }`}
-            >
-              Selanjutnya <ArrowRight size={20} />
-            </button>
-          </div>
-        </div>
-      </main>
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Info Kelulusan SMA Plus Islamic Village</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&amp;family=DM+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    .font-heading { font-family: 'Playfair Display', Georgia, serif; }
+    .font-body { font-family: 'DM Sans', sans-serif; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+    @keyframes confettiFall { 0% { transform: translateY(-100%) rotate(0deg); opacity: 1; } 100% { transform: translateY(800px) rotate(720deg); opacity: 0; } }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    .anim-fade-up { animation: fadeUp 0.6s ease forwards; }
+    .anim-scale-in { animation: scaleIn 0.5s ease forwards; }
+    .anim-pulse { animation: pulse 2s ease-in-out infinite; }
+    .confetti-piece { position: fixed; top: -20px; z-index: 100; animation: confettiFall 3s ease-in forwards; pointer-events: none; }
+    .grad-main { background: linear-gradient(135deg, #0B5FBF 0%, #1E7FD1 30%, #3B9FE8 60%, #5DBDFF 100%); }
+    .grad-card { background: linear-gradient(145deg, rgba(255,255,255,0.97), rgba(255,248,245,0.95)); }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 12px; color: #fff; font-family: 'DM Sans', sans-serif; font-weight: 600; z-index: 200; transition: opacity 0.3s; }
+    .toast-success { background: #16a34a; }
+    .toast-error { background: #dc2626; }
+    .btn-primary { background: linear-gradient(135deg, #0B5FBF, #3B9FE8); color: #fff; transition: all 0.2s; }
+    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; filter: none; }
+    input:focus { outline: none; box-shadow: 0 0 0 3px rgba(11,95,191,0.2); border-color: #0B5FBF; }
+  </style>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      brick: { 50:'#FFF5F0', 100:'#FFE8DC', 200:'#FFD0B8', 300:'#E87B4A', 400:'#D4603E', 500:'#C0432B', 600:'#B33A1A', 700:'#8C2D14', 800:'#66200E', 900:'#401308' }
+    }}}}
+  </script>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full font-body" style="margin:0; background:#E8F1F9;">
+  <div id="app" class="h-full w-full overflow-auto"><!-- STUDENT VIEW -->
+   <div id="studentView" class="min-h-full w-full flex flex-col" style="background:#E8F1F9;"><!-- Header -->
+    <header id="mainHeader" class="grad-main w-full relative overflow-hidden">
+     <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22><path d=%22M30 0L60 30L30 60L0 30Z%22 fill=%22white%22 fill-opacity=%220.15%22/></svg>'); background-size: 60px 60px;"></div>
+     <div class="relative z-10 max-w-2xl mx-auto px-6 py-12 text-center">
+      <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/20 mb-5 anim-scale-in"><i data-lucide="graduation-cap" style="width:40px;height:40px;color:#fff;"></i>
+      </div>
+      <h1 id="headerTitle" class="font-heading text-3xl md:text-4xl font-800 text-white mb-2 anim-fade-up">Pengumuman Kelulusan</h1>
+      <p id="headerSchool" class="text-white/90 text-lg font-600 anim-fade-up" style="animation-delay:0.1s">SMA Plus Islamic Village</p>
+      <p id="headerYear" class="text-white/70 text-sm mt-1 anim-fade-up" style="animation-delay:0.2s">Tahun Ajaran 2025/2026</p>
+     </div>
+    </header><!-- Check Form -->
+    <main class="flex-1 w-full max-w-lg mx-auto px-5 py-10">
+     <div id="checkFormCard" class="grad-card rounded-2xl shadow-lg p-7 anim-fade-up" style="animation-delay:0.3s; border:1px solid rgba(179,58,26,0.08);">
+      <h2 class="font-heading text-xl font-700 mb-1" style="color:#401308;">Cek Kelulusan</h2>
+      <p class="text-sm mb-6" style="color:#8C2D14;">Masukkan data dirimu untuk melihat status kelulusan.</p>
+      <form id="checkForm" onsubmit="return false;"><label for="inputNama" class="block text-sm font-600 mb-1.5" style="color:#66200E;">Nama Lengkap</label> <input id="inputNama" type="text" placeholder="Masukkan nama lengkap" class="w-full border rounded-xl px-4 py-3 mb-4 text-sm" style="border-color:#FFD0B8; background:#fff;"> <label for="inputNISN" class="block text-sm font-600 mb-1.5" style="color:#66200E;">NISN</label> <input id="inputNISN" type="text" placeholder="Masukkan NISN" class="w-full border rounded-xl px-4 py-3 mb-6 text-sm" style="border-color:#FFD0B8; background:#fff;"> <button type="submit" id="btnCheck" class="btn-primary w-full py-3.5 rounded-xl font-700 text-sm flex items-center justify-center gap-2"> <i data-lucide="search" style="width:18px;height:18px;"></i> Cek Kelulusan </button>
+      </form>
+     </div><!-- Result Area -->
+     <div id="resultArea" class="hidden mt-8"></div>
+    </main><!-- Footer with admin link -->
+    <footer class="w-full text-center py-6 px-4"><button id="btnAdminNav" class="text-xs font-500 underline" style="color:#B33A1A; opacity:0.5; cursor:pointer; background:none; border:none;">Panel Admin</button>
+     <p class="text-xs mt-2" style="color:#8C2D14; opacity:0.4;">© 2025 SMA Plus Islamic Village</p>
+    </footer>
+   </div><!-- ADMIN LOGIN -->
+   <div id="adminLogin" class="hidden min-h-full w-full flex items-center justify-center px-5 py-10" style="background:linear-gradient(135deg,#0B3F80,#1E5FA8);">
+    <div class="grad-card rounded-2xl shadow-2xl p-8 w-full max-w-sm">
+     <div class="text-center mb-6">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-full mb-3" style="background:linear-gradient(135deg,#0B5FBF,#3B9FE8);"><i data-lucide="shield" style="width:28px;height:28px;color:#fff;"></i>
+      </div>
+      <h2 class="font-heading text-xl font-700" style="color:#401308;">Admin Login</h2>
+     </div>
+     <form id="loginForm" onsubmit="return false;"><label class="block text-sm font-600 mb-1.5" style="color:#66200E;">Username</label> <input id="adminUser" type="text" class="w-full border rounded-xl px-4 py-3 mb-4 text-sm" style="border-color:#FFD0B8;"> <label class="block text-sm font-600 mb-1.5" style="color:#66200E;">Password</label> <input id="adminPass" type="password" class="w-full border rounded-xl px-4 py-3 mb-2 text-sm" style="border-color:#FFD0B8;">
+      <p id="loginError" class="text-xs text-red-600 mb-4 hidden">Username atau password salah.</p><button type="submit" class="btn-primary w-full py-3 rounded-xl font-700 text-sm">Masuk</button> <button type="button" id="btnBackFromLogin" class="w-full py-3 mt-3 rounded-xl font-600 text-sm" style="color:#B33A1A; background:none; border:1px solid #FFD0B8;">← Kembali</button>
+     </form>
     </div>
-  );
+   </div><!-- ADMIN PANEL -->
+   <div id="adminPanel" class="hidden min-h-full w-full" style="background:#FFF5F0;">
+    <header class="w-full px-6 py-4 flex items-center justify-between" style="background:#0B3F80;">
+     <h2 class="font-heading text-lg font-700 text-white">Panel Admin</h2>
+     <div class="flex gap-3"><button id="btnBackToStudent" class="text-xs text-white/80 underline" style="background:none;border:none;cursor:pointer;">Kembali</button> <button id="btnLogout" class="text-xs text-white/80 underline" style="background:none;border:none;cursor:pointer;">Logout</button>
+     </div>
+    </header>
+    <div class="max-w-2xl mx-auto px-5 py-8"><!-- Add Student -->
+     <div class="grad-card rounded-2xl shadow-md p-6 mb-6" style="border:1px solid rgba(179,58,26,0.08);">
+      <h3 class="font-heading text-lg font-700 mb-4" style="color:#401308;">Tambah Siswa</h3>
+      <form id="addStudentForm" onsubmit="return false;">
+       <div class="flex flex-col sm:flex-row gap-3 mb-3"><input id="addNama" type="text" placeholder="Nama Lengkap" class="flex-1 border rounded-xl px-4 py-3 text-sm" style="border-color:#FFD0B8;"> <input id="addNISN" type="text" placeholder="NISN" class="sm:w-40 border rounded-xl px-4 py-3 text-sm" style="border-color:#FFD0B8;">
+       </div>
+       <div class="flex items-center gap-2 mb-4"><input id="addLocked" type="checkbox" class="w-4 h-4 cursor-pointer" style="accent-color:#B33A1A;"> <label for="addLocked" class="text-sm font-500 cursor-pointer" style="color:#66200E;">🔒 Hubungi Administrator (Tidak Bisa Cek Kelulusan)</label>
+       </div><button type="submit" id="btnAddStudent" class="btn-primary w-full sm:w-auto px-6 py-3 rounded-xl font-700 text-sm whitespace-nowrap flex items-center gap-2"> <i data-lucide="plus" style="width:16px;height:16px;"></i> Tambah </button>
+      </form>
+     </div><!-- Student List -->
+     <div class="grad-card rounded-2xl shadow-md p-6" style="border:1px solid rgba(179,58,26,0.08);">
+      <div class="flex items-center justify-between mb-4">
+       <h3 class="font-heading text-lg font-700" style="color:#401308;">Daftar Siswa</h3><span id="studentCount" class="text-xs font-600 px-3 py-1 rounded-full" style="background:#FFE8DC; color:#B33A1A;">0 siswa</span>
+      </div>
+      <div id="studentList" class="space-y-2"></div>
+      <p id="emptyState" class="text-center py-8 text-sm" style="color:#8C2D14; opacity:0.5;">Belum ada data siswa. Tambahkan siswa di atas.</p>
+     </div>
+    </div>
+   </div><!-- Confetti container -->
+   <div id="confettiContainer"></div>
+  </div>
+  <div id="toastContainer"></div><!-- Delete Confirmation Overlay -->
+  <div id="deleteOverlay" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4" style="background:rgba(0,0,0,0.5);">
+   <div class="grad-card rounded-2xl shadow-2xl p-6 max-w-sm w-full text-center">
+    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full mb-3" style="background:#FEE2E2;"><i data-lucide="alert-triangle" style="width:24px;height:24px;color:#dc2626;"></i>
+    </div>
+    <h3 class="font-heading text-lg font-700 mb-1" style="color:#401308;">Hapus Siswa?</h3>
+    <p id="deleteName" class="text-sm mb-5" style="color:#66200E;"></p>
+    <div class="flex gap-3"><button id="btnCancelDelete" class="flex-1 py-2.5 rounded-xl font-600 text-sm" style="border:1px solid #FFD0B8; color:#B33A1A; background:#fff;">Batal</button> <button id="btnConfirmDelete" class="flex-1 py-2.5 rounded-xl font-700 text-sm text-white" style="background:#dc2626;">Hapus</button>
+    </div>
+   </div>
+  </div>
+  <script>
+// State
+let allStudents = [];
+let isAdmin = false;
+let pendingDelete = null;
+
+const defaultConfig = {
+  school_name: 'SMA Plus Islamic Village',
+  academic_year: '2025/2026',
+  congrats_message: 'Selamat atas kelulusanmu! Semoga sukses di masa depan. 🎓',
+  background_color: '#0B5FBF',
+  surface_color: '#FFFFFF',
+  text_color: '#0B3F80',
+  primary_action_color: '#3B9FE8',
+  secondary_action_color: '#1E7FD1',
+  font_family: 'Playfair Display',
+  font_size: 16
+};
+
+// Toast
+function showToast(msg, type='success') {
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.textContent = msg;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2500);
 }
 
-// --- SLIDE COMPONENTS ---
-
-function SlideIntro() {
-  return (
-    <div className="flex flex-col items-center justify-center h-full text-center space-y-6 animate-in fade-in zoom-in duration-500">
-      <div className="bg-indigo-100 p-6 rounded-full inline-block mb-4">
-        <BrainCircuit size={80} className="text-indigo-600 animate-pulse" />
-      </div>
-      <h2 className="text-4xl font-extrabold text-slate-800">
-        Pernah merasa HP-mu bisa <span className="text-indigo-600">baca pikiran?</span>
-      </h2>
-      <p className="text-xl text-slate-600 max-w-2xl leading-relaxed">
-        Kenapa FYP TikTok tahu video yang kamu suka? Kenapa Spotify tahu lagu sedih saat kamu galau? 
-        Hari ini kita akan membongkar rahasianya: <br/> 
-        <strong className="text-indigo-500">Bukan sihir, tapi DATA!</strong>
-      </p>
-    </div>
-  );
+// Confetti
+function launchConfetti() {
+  const c = document.getElementById('confettiContainer');
+  c.innerHTML = '';
+  const colors = ['#0B5FBF','#1E7FD1','#3B9FE8','#5DBDFF','#fff','#22c55e','#16a34a'];
+  for (let i = 0; i < 60; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.left = Math.random()*100 + '%';
+    p.style.width = (6+Math.random()*8) + 'px';
+    p.style.height = (6+Math.random()*8) + 'px';
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.borderRadius = Math.random()>0.5 ? '50%' : '2px';
+    p.style.animationDelay = Math.random()*2 + 's';
+    p.style.animationDuration = (2+Math.random()*2) + 's';
+    c.appendChild(p);
+  }
+  setTimeout(() => c.innerHTML = '', 5000);
 }
 
-function SlideConcept() {
-  const [step, setStep] = useState(1);
+// Navigation
+function showView(view) {
+  document.getElementById('studentView').classList.toggle('hidden', view !== 'student');
+  document.getElementById('adminLogin').classList.toggle('hidden', view !== 'login');
+  document.getElementById('adminPanel').classList.toggle('hidden', view !== 'admin');
+}
 
-  return (
-    <div className="flex flex-col h-full animate-in slide-in-from-right-8 duration-500">
-      <h2 className="text-3xl font-bold mb-2 text-slate-800">Analogi Dapur Ajaib 🍳</h2>
-      <p className="text-slate-600 mb-8">Mari kita pahami bedanya Data, Informasi, dan AI dengan membayangkan sebuah dapur restoran.</p>
+document.getElementById('btnAdminNav').addEventListener('click', () => showView('login'));
+document.getElementById('btnBackFromLogin').addEventListener('click', () => { showView('student'); document.getElementById('loginError').classList.add('hidden'); });
+document.getElementById('btnLogout').addEventListener('click', () => { isAdmin = false; showView('student'); });
+document.getElementById('btnBackToStudent').addEventListener('click', () => showView('student'));
 
-      <div className="flex flex-col sm:flex-row gap-6 justify-between flex-grow">
-        
-        {/* Step 1: DATA */}
-        <div className={`flex-1 border-2 rounded-xl p-6 flex flex-col items-center text-center transition-all duration-300 ${step >= 1 ? 'border-blue-400 bg-blue-50' : 'border-slate-200 opacity-50 grayscale'}`}>
-          <Database size={48} className="text-blue-500 mb-4" />
-          <h3 className="text-xl font-bold text-blue-700 mb-2">1. DATA</h3>
-          <p className="text-sm text-slate-700 mb-4 flex-grow">Bahan mentah yang belum bermakna. Seperti: telur, tepung, gula yang berserakan.</p>
-          <div className="text-3xl">🥚 🌾 🍬</div>
-        </div>
+// Admin Login
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const u = document.getElementById('adminUser').value.trim();
+  const p = document.getElementById('adminPass').value;
+  if (u === 'admin' && p === '1234') {
+    isAdmin = true;
+    document.getElementById('loginError').classList.add('hidden');
+    document.getElementById('adminUser').value = '';
+    document.getElementById('adminPass').value = '';
+    showView('admin');
+    renderStudentList();
+  } else {
+    document.getElementById('loginError').classList.remove('hidden');
+  }
+});
 
-        {/* Arrow */}
-        <div className={`hidden sm:flex items-center justify-center transition-opacity duration-300 ${step >= 2 ? 'opacity-100' : 'opacity-0'}`}>
-          <ArrowRight size={32} className="text-slate-400" />
-        </div>
+// Check graduation
+document.getElementById('checkForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const nama = document.getElementById('inputNama').value.trim().toLowerCase();
+  const nisn = document.getElementById('inputNISN').value.trim();
+  const area = document.getElementById('resultArea');
 
-        {/* Step 2: INFORMASI */}
-        <div className={`flex-1 border-2 rounded-xl p-6 flex flex-col items-center text-center transition-all duration-300 ${step >= 2 ? 'border-amber-400 bg-amber-50' : 'border-slate-200 opacity-50 grayscale'}`}>
-          <FileText size={48} className="text-amber-500 mb-4" />
-          <h3 className="text-xl font-bold text-amber-700 mb-2">2. INFORMASI</h3>
-          <p className="text-sm text-slate-700 mb-4 flex-grow">Data yang sudah disusun dan diberi konteks. Menjadi sebuah "Resep Kue".</p>
-          <div className="text-3xl">📝 📖</div>
-        </div>
+  if (!nama || !nisn) { showToast('Mohon isi nama dan NISN.', 'error'); return; }
 
-        {/* Arrow */}
-        <div className={`hidden sm:flex items-center justify-center transition-opacity duration-300 ${step >= 3 ? 'opacity-100' : 'opacity-0'}`}>
-          <ArrowRight size={32} className="text-slate-400" />
-        </div>
+  const found = allStudents.find(s => s.nama.toLowerCase() === nama && s.nisn === nisn);
+  const cfg = window.elementSdk?.config || defaultConfig;
 
-        {/* Step 3: AI */}
-        <div className={`flex-1 border-2 rounded-xl p-6 flex flex-col items-center text-center transition-all duration-300 ${step >= 3 ? 'border-indigo-400 bg-indigo-50 shadow-lg scale-105' : 'border-slate-200 opacity-50 grayscale'}`}>
-          <ChefHat size={48} className="text-indigo-500 mb-4" />
-          <h3 className="text-xl font-bold text-indigo-700 mb-2">3. A.I.</h3>
-          <p className="text-sm text-slate-700 mb-4 flex-grow">Koki pintar yang belajar dari ribuan resep untuk membuat kue baru secara otomatis.</p>
-          <div className="text-3xl">🤖 🎂</div>
-        </div>
-
-      </div>
-
-      <div className="mt-8 flex justify-center">
-        {step < 3 ? (
-          <button 
-            onClick={() => setStep(step + 1)}
-            className="bg-slate-800 text-white px-6 py-3 rounded-full font-bold flex items-center gap-2 hover:bg-slate-700 transition-colors shadow-md animate-bounce"
-          >
-            Proses Selanjutnya <Play size={18} fill="currentColor" />
-          </button>
-        ) : (
-          <div className="bg-green-100 text-green-800 px-6 py-3 rounded-full font-bold flex items-center gap-2">
-            <CheckCircle2 size={20} /> Proses Selesai! AI siap bekerja.
+  if (found) {
+    // Check if locked
+    if (found.status === 'locked') {
+      area.innerHTML = `
+        <div class="text-center anim-scale-in">
+          <div class="grad-card rounded-2xl shadow-xl p-8" style="border:2px solid #f59e0b;">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4" style="background:#FEF3C7;">
+              <i data-lucide="lock" style="width:44px;height:44px;color:#d97706;"></i>
+            </div>
+            <h2 class="font-heading text-2xl font-800 mb-2" style="color:#d97706;">Informasi Terbatas</h2>
+            <p class="font-600 text-lg mb-1" style="color:#401308;">${found.nama}</p>
+            <p class="text-sm mb-4" style="color:#66200E;">NISN: ${found.nisn}</p>
+            <div class="rounded-xl p-4 mb-4" style="background:#FEF3C7;">
+              <p class="text-sm font-500" style="color:#92400e;">Mohon Maaf, informasi kelulusan belum bisa dilakukan. Harap hubungi administrator.</p>
+            </div>
+            <p class="text-xs" style="color:#8C2D14; opacity:0.6;">${cfg.school_name || defaultConfig.school_name} — TA ${cfg.academic_year || defaultConfig.academic_year}</p>
           </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function SlideGame() {
-  const dataset = [
-    { emoji: '🐕', type: 'anjing' },
-    { emoji: '🧁', type: 'kue' },
-    { emoji: '🐩', type: 'anjing' },
-    { emoji: '🍩', type: 'kue' },
-    { emoji: '🦮', type: 'anjing' },
-    { emoji: '🍪', type: 'kue' },
-    { emoji: '🦊', type: 'anjing' }, // Trick
-    { emoji: '🥧', type: 'kue' },
-  ];
-
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [score, setScore] = useState(0);
-  const [feedback, setFeedback] = useState(null); // 'correct' | 'wrong'
-
-  const startGame = () => {
-    setIsPlaying(true);
-    setCurrentIndex(0);
-    setScore(0);
-    setFeedback(null);
-  };
-
-  const handleGuess = (guess) => {
-    const isCorrect = guess === dataset[currentIndex].type;
-    setFeedback(isCorrect ? 'correct' : 'wrong');
-    
-    if (isCorrect) setScore(score + 1);
-
-    setTimeout(() => {
-      setFeedback(null);
-      if (currentIndex < dataset.length - 1) {
-        setCurrentIndex(currentIndex + 1);
-      } else {
-        setIsPlaying(false);
-      }
-    }, 800);
-  };
-
-  return (
-    <div className="flex flex-col items-center justify-center h-full text-center animate-in slide-in-from-right-8 duration-500">
-      <h2 className="text-3xl font-bold mb-2 text-slate-800">Mini Game: Latih AI-mu! 🎯</h2>
-      <p className="text-slate-600 mb-6 max-w-lg">
-        AI perlu dilatih dengan banyak <strong>Data</strong> agar menjadi pintar. 
-        Sekarang, jadilah "Pelatih AI". Kelompokkan gambar di bawah ini dengan cepat!
-      </p>
-
-      <div className="bg-slate-100 rounded-3xl p-8 w-full max-w-md shadow-inner relative flex flex-col items-center">
-        
-        {currentIndex >= dataset.length - 1 && !isPlaying && score > 0 ? (
-           <div className="py-8 animate-in zoom-in">
-             <div className="text-6xl mb-4">🏆</div>
-             <h3 className="text-2xl font-bold text-slate-800">Latihan Selesai!</h3>
-             <p className="text-slate-600 mb-4">Akurasi AI-mu: {Math.round((score/dataset.length)*100)}%</p>
-             <button onClick={startGame} className="bg-indigo-600 text-white px-6 py-2 rounded-full font-bold hover:bg-indigo-700">Main Lagi</button>
-           </div>
-        ) : !isPlaying ? (
-          <button 
-            onClick={startGame}
-            className="bg-indigo-600 text-white px-8 py-4 rounded-full font-bold text-xl hover:bg-indigo-700 hover:scale-105 transition-all shadow-lg flex items-center gap-2"
-          >
-            <Play fill="currentColor" /> Mulai Melatih AI
-          </button>
-        ) : (
-          <div className="flex flex-col items-center w-full">
-            <div className="text-sm font-bold text-slate-400 mb-4 uppercase tracking-widest">
-              Data {currentIndex + 1} / {dataset.length}
+        </div>`;
+      area.classList.remove('hidden');
+      lucide.createIcons();
+    } else {
+      // Not locked - show graduation
+      area.innerHTML = `
+        <div class="text-center anim-scale-in">
+          <div class="grad-card rounded-2xl shadow-xl p-8" style="border:2px solid #B33A1A;">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 anim-pulse" style="background:linear-gradient(135deg,#16a34a,#22c55e);">
+              <i data-lucide="check-circle" style="width:44px;height:44px;color:#fff;"></i>
             </div>
-            
-            <div className="h-40 w-40 bg-white rounded-2xl shadow-md flex items-center justify-center text-8xl mb-8 relative">
-              {/* Image / Emoji */}
-              <div className={feedback ? 'scale-90 transition-transform' : 'scale-100 transition-transform'}>
-                 {dataset[currentIndex].emoji}
-              </div>
-              
-              {/* Feedback overlay */}
-              {feedback === 'correct' && <CheckCircle2 className="absolute text-green-500 animate-in zoom-in" size={80} />}
-              {feedback === 'wrong' && <XCircle className="absolute text-red-500 animate-in zoom-in" size={80} />}
+            <h2 class="font-heading text-3xl font-800 mb-2" style="color:#16a34a;">LULUS</h2>
+            <p class="font-600 text-lg mb-1" style="color:#401308;">${found.nama}</p>
+            <p class="text-sm mb-4" style="color:#66200E;">NISN: ${found.nisn}</p>
+            <div class="rounded-xl p-4 mb-4" style="background:#F0FDF4;">
+              <p class="text-sm font-500" style="color:#166534;">${cfg.congrats_message || defaultConfig.congrats_message}</p>
             </div>
-
-            <div className="flex gap-4 w-full">
-              <button 
-                onClick={() => handleGuess('anjing')}
-                disabled={feedback !== null}
-                className="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-4 rounded-xl font-bold text-lg transition-colors active:scale-95"
-              >
-                🐶 Anjing
-              </button>
-              <button 
-                onClick={() => handleGuess('kue')}
-                disabled={feedback !== null}
-                className="flex-1 bg-pink-500 hover:bg-pink-600 text-white py-4 rounded-xl font-bold text-lg transition-colors active:scale-95"
-              >
-                🧁 Kue
-              </button>
-            </div>
+            <p class="text-xs" style="color:#8C2D14; opacity:0.6;">${cfg.school_name || defaultConfig.school_name} — TA ${cfg.academic_year || defaultConfig.academic_year}</p>
           </div>
-        )}
-      </div>
-
-      <p className="text-sm text-slate-500 mt-6 italic">
-        *Ini adalah konsep <strong>Machine Learning (Computer Vision)</strong>. AI membedakan pola gambar setelah melihat banyak contoh.
-      </p>
-    </div>
-  );
-}
-
-function SlideExamples() {
-  const examples = [
-    {
-      title: "Sosial Media (FYP)",
-      icon: <Smartphone size={32} />,
-      color: "bg-pink-50 text-pink-600 border-pink-200",
-      data: "Durasi kamu menonton video kucing (tidak di-skip).",
-      info: "User ini suka konten hewan peliharaan.",
-      ai: "Menampilkan lebih banyak video kucing di FYP-mu besok."
-    },
-    {
-      title: "Navigasi Peta",
-      icon: <Map size={32} />,
-      color: "bg-emerald-50 text-emerald-600 border-emerald-200",
-      data: "Sinyal GPS ribuan HP yang berjalan pelan di jalan Sudirman.",
-      info: "Kecepatan rata-rata di Sudirman hanya 5 km/jam.",
-      ai: "Menandai jalan warna merah (Macet) dan mencari rute tikus."
-    },
-    {
-      title: "Aplikasi Musik",
-      icon: <Music size={32} />,
-      color: "bg-purple-50 text-purple-600 border-purple-200",
-      data: "Kamu sering putar lagu Pop di malam hari.",
-      info: "Pola mendengarkan musik santai sebelum tidur.",
-      ai: "Otomatis membuat playlist 'Sleepy Pop' khusus untukmu."
+        </div>`;
+      area.classList.remove('hidden');
+      lucide.createIcons();
+      launchConfetti();
     }
-  ];
-
-  const [activeTab, setActiveTab] = useState(0);
-
-  return (
-    <div className="flex flex-col h-full animate-in slide-in-from-right-8 duration-500">
-      <h2 className="text-3xl font-bold mb-2 text-slate-800">AI di Genggamanmu 📱</h2>
-      <p className="text-slate-600 mb-6">Pilih salah satu aplikasi di bawah untuk melihat bagaimana Data diubah menjadi AI.</p>
-
-      <div className="flex flex-col md:flex-row gap-6 flex-grow">
-        {/* Tabs */}
-        <div className="flex flex-row md:flex-col gap-3 w-full md:w-1/3">
-          {examples.map((ex, idx) => (
-            <button
-              key={idx}
-              onClick={() => setActiveTab(idx)}
-              className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all font-bold text-left ${
-                activeTab === idx 
-                  ? `${ex.color} shadow-md border-opacity-100 scale-105` 
-                  : 'bg-white text-slate-500 border-slate-100 hover:bg-slate-50'
-              }`}
-            >
-              {ex.icon}
-              <span className="hidden sm:inline">{ex.title}</span>
-            </button>
-          ))}
+  } else {
+    area.innerHTML = `
+      <div class="text-center anim-scale-in">
+        <div class="grad-card rounded-2xl shadow-xl p-8" style="border:2px solid #dc2626;">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" style="background:#FEE2E2;">
+            <i data-lucide="x-circle" style="width:36px;height:36px;color:#dc2626;"></i>
+          </div>
+          <h3 class="font-heading text-xl font-700 mb-2" style="color:#dc2626;">Data Tidak Ditemukan</h3>
+          <p class="text-sm" style="color:#66200E;">Nama atau NISN tidak terdaftar. Pastikan data yang dimasukkan benar.</p>
         </div>
+      </div>`;
+    area.classList.remove('hidden');
+    lucide.createIcons();
+  }
+});
 
-        {/* Content Panel */}
-        <div className="bg-slate-50 border-2 border-slate-100 rounded-2xl p-6 flex-grow flex flex-col justify-center space-y-6">
-          
-          <div className="flex flex-col animate-in slide-in-from-bottom-4 duration-300" key={`data-${activeTab}`}>
-            <h4 className="text-sm font-bold text-blue-500 uppercase flex items-center gap-2 mb-1">
-              <Database size={16} /> 1. Pengumpulan Data
-            </h4>
-            <p className="text-slate-700 bg-white p-3 rounded-lg border border-slate-200">{examples[activeTab].data}</p>
-          </div>
+// Admin: render student list
+function renderStudentList() {
+  const list = document.getElementById('studentList');
+  const empty = document.getElementById('emptyState');
+  document.getElementById('studentCount').textContent = allStudents.length + ' siswa';
 
-          <div className="flex flex-col animate-in slide-in-from-bottom-4 duration-500" key={`info-${activeTab}`}>
-             <h4 className="text-sm font-bold text-amber-500 uppercase flex items-center gap-2 mb-1">
-              <FileText size={16} /> 2. Menjadi Informasi
-            </h4>
-            <p className="text-slate-700 bg-white p-3 rounded-lg border border-slate-200">{examples[activeTab].info}</p>
-          </div>
+  if (allStudents.length === 0) {
+    list.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
 
-          <div className="flex flex-col animate-in slide-in-from-bottom-4 duration-700" key={`ai-${activeTab}`}>
-             <h4 className="text-sm font-bold text-indigo-500 uppercase flex items-center gap-2 mb-1">
-              <BrainCircuit size={16} /> 3. Aksi AI
-            </h4>
-            <p className="text-white bg-indigo-600 p-4 rounded-lg font-medium shadow-md">{examples[activeTab].ai}</p>
-          </div>
+  const existingMap = new Map([...list.children].map(el => [el.dataset.id, el]));
+  const sorted = [...allStudents].sort((a, b) => a.nama.localeCompare(b.nama));
 
+  sorted.forEach((s, i) => {
+    const id = s.__backendId;
+    if (existingMap.has(id)) {
+      const el = existingMap.get(id);
+      el.querySelector('.s-nama').textContent = s.nama;
+      el.querySelector('.s-nisn').textContent = 'NISN: ' + s.nisn;
+      const checkbox = el.querySelector('.s-status-check');
+      checkbox.checked = s.status === 'locked';
+      existingMap.delete(id);
+    } else {
+      const el = document.createElement('div');
+      el.dataset.id = id;
+      el.className = 'flex items-center justify-between p-3 rounded-xl';
+      el.style.cssText = 'background:#FFF5F0; border:1px solid #FFE8DC;';
+      el.innerHTML = `
+        <div class="flex-1">
+          <p class="s-nama font-600 text-sm" style="color:#401308;">${s.nama}</p>
+          <p class="s-nisn text-xs" style="color:#8C2D14;">${'NISN: ' + s.nisn}</p>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function SlideOutro() {
-  return (
-    <div className="flex flex-col items-center justify-center h-full text-center space-y-8 animate-in fade-in zoom-in duration-500">
-      <div className="bg-green-100 p-6 rounded-full inline-block">
-        <Database size={60} className="text-green-600 inline mr-2" />
-        <ArrowRight size={30} className="text-green-400 inline mx-2" />
-        <BrainCircuit size={60} className="text-green-600 inline ml-2" />
-      </div>
+        <div class="flex items-center gap-3">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" class="s-status-check w-4 h-4" style="accent-color:#B33A1A;" ${s.status === 'locked' ? 'checked' : ''}>
+            <span class="text-xs font-500" style="color:#66200E;">🔒</span>
+          </label>
+          <button class="delete-btn p-2 rounded-lg" style="color:#dc2626;background:none;border:none;cursor:pointer;" title="Hapus">
+            <i data-lucide="trash-2" style="width:16px;height:16px;"></i>
+          </button>
+        </div>`;
       
-      <div>
-        <h2 className="text-4xl font-extrabold text-slate-800 mb-4">
-          Kesimpulan: Good Data = Good AI
-        </h2>
-        <p className="text-xl text-slate-600 max-w-2xl leading-relaxed mx-auto">
-          AI bukan makhluk asing. AI adalah mesin matematika yang sangat cepat belajar dari Data. 
-          <strong> Tanpa data yang kamu hasilkan setiap hari, AI tidak akan bisa pintar.</strong>
-        </p>
-      </div>
+      el.querySelector('.s-status-check').addEventListener('change', async (e) => {
+        const checkbox = e.target;
+        checkbox.disabled = true;
+        const newStatus = checkbox.checked ? 'locked' : '';
+        const updatedStudent = { ...s, status: newStatus };
+        const result = await window.dataSdk.update(updatedStudent);
+        if (!result.isOk) {
+          checkbox.checked = !checkbox.checked;
+          showToast('Gagal mengubah status.', 'error');
+        }
+        checkbox.disabled = false;
+      });
 
-      <div className="bg-indigo-50 border border-indigo-200 p-6 rounded-2xl max-w-2xl w-full text-left">
-        <h3 className="font-bold text-indigo-800 text-lg mb-2 flex items-center gap-2">
-          🗣️ Bahan Diskusi Kelas:
-        </h3>
-        <p className="text-slate-700 italic">
-          "Jika kamu bisa membuat sistem AI untuk memecahkan satu masalah di sekolah kita, masalah apa itu? Dan <strong>Data</strong> apa saja yang harus kamu kumpulkan untuk melatih AI-mu?"
-        </p>
-      </div>
-    </div>
-  );
+      el.querySelector('.delete-btn').addEventListener('click', () => confirmDelete(s));
+      list.appendChild(el);
+    }
+  });
+
+  existingMap.forEach(el => el.remove());
+  lucide.createIcons();
 }
+
+// Delete confirmation
+function confirmDelete(student) {
+  pendingDelete = student;
+  document.getElementById('deleteName').textContent = `${student.nama} (NISN: ${student.nisn})`;
+  document.getElementById('deleteOverlay').classList.remove('hidden');
+}
+
+document.getElementById('btnCancelDelete').addEventListener('click', () => {
+  pendingDelete = null;
+  document.getElementById('deleteOverlay').classList.add('hidden');
+});
+
+document.getElementById('btnConfirmDelete').addEventListener('click', async () => {
+  if (!pendingDelete) return;
+  const btn = document.getElementById('btnConfirmDelete');
+  btn.disabled = true; btn.textContent = 'Menghapus...';
+  const result = await window.dataSdk.delete(pendingDelete);
+  btn.disabled = false; btn.textContent = 'Hapus';
+  document.getElementById('deleteOverlay').classList.add('hidden');
+  if (result.isOk) { showToast('Siswa berhasil dihapus.'); }
+  else { showToast('Gagal menghapus siswa.', 'error'); }
+  pendingDelete = null;
+});
+
+// Add student
+document.getElementById('addStudentForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const nama = document.getElementById('addNama').value.trim();
+  const nisn = document.getElementById('addNISN').value.trim();
+  const isLocked = document.getElementById('addLocked').checked;
+  
+  if (!nama || !nisn) { showToast('Mohon isi nama dan NISN.', 'error'); return; }
+  if (allStudents.length >= 999) { showToast('Batas maksimum 999 siswa tercapai.', 'error'); return; }
+
+  const btn = document.getElementById('btnAddStudent');
+  btn.disabled = true;
+  const result = await window.dataSdk.create({ 
+    nama, 
+    nisn, 
+    status: isLocked ? 'locked' : ''
+  });
+  btn.disabled = false;
+  if (result.isOk) {
+    document.getElementById('addNama').value = '';
+    document.getElementById('addNISN').value = '';
+    document.getElementById('addLocked').checked = false;
+    showToast('Siswa berhasil ditambahkan!');
+  } else {
+    showToast('Gagal menambahkan siswa.', 'error');
+  }
+});
+
+// Data SDK
+const dataHandler = {
+  onDataChanged(data) {
+    allStudents = data;
+    if (isAdmin) renderStudentList();
+  }
+};
+
+// Element SDK
+function applyConfig(config) {
+  const c = { ...defaultConfig, ...config };
+  const font = c.font_family || defaultConfig.font_family;
+  const base = c.font_size || defaultConfig.font_size;
+
+  document.getElementById('headerSchool').textContent = c.school_name;
+  document.getElementById('headerYear').textContent = 'Tahun Ajaran ' + c.academic_year;
+
+  document.querySelectorAll('.font-heading').forEach(el => el.style.fontFamily = `${font}, Georgia, serif`);
+  document.querySelectorAll('.font-body, input, button, p, label').forEach(el => {
+    if (!el.closest('.font-heading')) el.style.fontFamily = `DM Sans, ${font}, sans-serif`;
+  });
+
+  // Font sizing
+  document.querySelectorAll('h1').forEach(el => el.style.fontSize = (base * 2) + 'px');
+  document.querySelectorAll('h2').forEach(el => el.style.fontSize = (base * 1.5) + 'px');
+  document.querySelectorAll('h3').forEach(el => el.style.fontSize = (base * 1.2) + 'px');
+  document.querySelectorAll('p, label, input, button').forEach(el => el.style.fontSize = (base * 0.875) + 'px');
+
+  // Colors
+  document.getElementById('mainHeader').style.background = `linear-gradient(135deg, ${c.background_color}, ${c.primary_action_color})`;
+  document.querySelectorAll('.grad-card').forEach(el => {
+    el.style.background = `linear-gradient(145deg, ${c.surface_color}, ${c.surface_color}f2)`;
+  });
+  document.querySelectorAll('[style*="color:#401308"]').forEach(el => el.style.color = c.text_color);
+  document.querySelectorAll('.btn-primary').forEach(el => {
+    el.style.background = `linear-gradient(135deg, ${c.background_color}, ${c.primary_action_color})`;
+  });
+}
+
+window.elementSdk.init({
+  defaultConfig,
+  onConfigChange: async (config) => applyConfig(config),
+  mapToCapabilities: (config) => {
+    const c = { ...defaultConfig, ...config };
+    function recolor(key) {
+      return {
+        get: () => c[key] || defaultConfig[key],
+        set: (v) => { c[key] = v; window.elementSdk.setConfig({ [key]: v }); }
+      };
+    }
+    return {
+      recolorables: [
+        recolor('background_color'),
+        recolor('surface_color'),
+        recolor('text_color'),
+        recolor('primary_action_color'),
+        recolor('secondary_action_color')
+      ],
+      borderables: [],
+      fontEditable: {
+        get: () => c.font_family || defaultConfig.font_family,
+        set: (v) => { c.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
+      },
+      fontSizeable: {
+        get: () => c.font_size || defaultConfig.font_size,
+        set: (v) => { c.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
+      }
+    };
+  },
+  mapToEditPanelValues: (config) => {
+    const c = { ...defaultConfig, ...config };
+    return new Map([
+      ['school_name', c.school_name],
+      ['academic_year', c.academic_year],
+      ['congrats_message', c.congrats_message]
+    ]);
+  }
+});
+
+(async () => {
+  const r = await window.dataSdk.init(dataHandler);
+  if (!r.isOk) console.error('Data SDK init failed');
+})();
+
+lucide.createIcons();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9f3c807e30c46cf2',t:'MTc3NzQ0Njc4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
